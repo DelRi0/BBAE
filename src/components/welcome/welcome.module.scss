@@ -1,0 +1,151 @@
+$base-color: #49a5ff;
+
+.welcomePage {
+  padding-bottom: 50px;
+  .welcome {
+    height: 400px;
+    width: 100%;
+  }
+  .content {
+    height: 100%;
+    width: 498px;
+    margin: auto;
+    margin-top: -330px;
+    .box {
+      background-color: #ffffff;
+      height: 525px;
+      text-align: center;
+      padding: 48px 56px 20px 56px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.12);
+      .title2 {
+        margin-top: 18px;
+        font-family: "OpenSans-Regular";
+        font-size: 20px;
+        color: #111c24;
+        letter-spacing: 0px;
+        text-align: center;
+      }
+
+      .title3 {
+        width: 272px;
+        margin: auto;
+        margin-top: 20px;
+        font-family: "OpenSans-Regular";
+        color: #111c24;
+        letter-spacing: 0px;
+        text-align: center;
+      }
+
+      .buttonClaim {
+        font-family: "penSans-Regular";
+        background: $base-color;
+        border-radius: 4.8px;
+        border: none;
+        width: 305px;
+        height: 48px;
+        color: white;
+        cursor: pointer;
+      }
+      .boxHeader {
+        margin-bottom: 34px;
+        .box_title {
+          font-family: "OpenSans-SemiBold";
+          font-size: 30px;
+          color: #20282f;
+          letter-spacing: 0;
+        }
+      }
+      .wrapperButtonSubmittedSuccess {
+        display: flex;
+        justify-content: center;
+      }
+    }
+    .ListItem {
+      margin-top: 48px;
+      .itemList {
+        display: flex;
+        margin-bottom: 33px;
+        .circle {
+          background-color: $base-color;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          margin-top: 5px;
+          margin-right: 15px;
+        }
+        .title {
+          font-size: 15px;
+          letter-spacing: 0;
+          font-family: OpenSans-SemiBold;
+          color: #111c24;
+          letter-spacing: 0;
+        }
+        .des {
+          font-size: 15px;
+          color: #4f5460;
+          font-family: OpenSans-Regular;
+          letter-spacing: 0;
+        }
+      }
+    }
+    .DownloadApp {
+      .content_download {
+        background: #f5f8fa;
+        border-radius: 6px;
+        padding: 15px;
+        font-family: "HelveticaNeue";
+        font-size: 13px;
+        color: #858d9e;
+        letter-spacing: 0;
+        line-height: 15px;
+        .text_highlight {
+          color: $base-color;
+        }
+      }
+      .wrapper_button_link_to_app {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    .textContent {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #858d9e;
+      font-family: "OpenSans-Regular";
+      color: #858d9e;
+      letter-spacing: 0;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .content {
+      width: auto !important;
+      padding: 20px !important;
+    }
+    .buttonClaim {
+      width: 200px !important;
+    }
+    .box_title {
+      font-size: 24px !important;
+    }
+    .box {
+      padding: 27px 30px 20px 30px !important;
+      height: 490px !important;
+    }
+    .wrapperButtonSubmittedSuccess {
+      margin-top: 40px;
+    }
+    .title3 {
+      width: auto !important;
+    }
+    .title2 {
+      font-size: 16px !important;
+    }
+    .boxHeader {
+      margin-bottom: 10px !important;
+    }
+  }
+}

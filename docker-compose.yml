@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:3000
+    volumes:
+      - ./:/app
+    networks:
+      - bbae-networks
+    environment:
+      - API_ENDPOINT=https://transformer-web--qa-01.bbaecache.com/api
+
+networks:
+  bbae-networks:
