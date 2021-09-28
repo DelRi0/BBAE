@@ -56,13 +56,13 @@ const ThanSo = () => {
       str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
       str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
       str = str.replace(/đ/g, "d");
-      str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-      str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-      str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-      str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-      str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-      str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-      str = str.replace(/Đ/g, "D");
+      str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "a");
+      str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "e");
+      str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "i");
+      str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "o");
+      str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "u");
+      str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "y");
+      str = str.replace(/Đ/g, "d");
     }
     return str.trim();
   };
@@ -156,11 +156,50 @@ const ThanSo = () => {
     }
   };
 
-  const tinhNguyenAmTheoTen = (arrTen) => {};
+  const kiemTraYPhuAm = (valueCheck) => {
+    if (
+      valueCheck === "u" ||
+      valueCheck === "e" ||
+      valueCheck === "o" ||
+      valueCheck === "a" ||
+      valueCheck === "i"
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  const tinhNguyenAmTheoTen = (arrTen) => {
+    let arrNguyenAm = [];
+    let arrPhuAm = [];
+    arrTen.split("").map((item, index) => {
+      if (item === "y") {
+        if (
+          kiemTraYPhuAm(arrTen[index - 1] ? arrTen[index - 1] : "c") &&
+          kiemTraYPhuAm(arrTen[index + 1] ? arrTen[index + 1] : "c")
+        ) {
+          // y la phu am
+          arrPhuAm.push(item);
+        } else {
+          // y la nguyen am
+          arrNguyenAm.push(item);
+        }
+      } else if (kiemTraYPhuAm(item)) {
+        // day la phu am
+        arrPhuAm.push(item);
+      } else {
+        // day la nguyen am
+        arrNguyenAm.push(item);
+      }
+    });
+    console.log("arrPhuAm", arrPhuAm);
+    console.log("arrNguyenAm", arrNguyenAm);
+  };
 
   const onClickTinhToan = () => {
     tinhNangLucTuNhien();
     tinhBaiHocDuongDoi();
+    tinhNguyenAmTheoTen("yen");
   };
 
   const handleOnchangeBirthDay = (value) => {
