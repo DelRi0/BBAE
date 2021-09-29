@@ -10,6 +10,7 @@ const ThanSo = () => {
   const [fullName, setFullName] = useState("");
   const [birthDay, setBirthDay] = useState("");
   const [nangLucTiepCan, setNangLucTiepCan] = useState(null);
+  const [dongLucThoaMan, setDongLucThoaMan] = useState(null);
   const arrNghiep = [13, 14, 16, 19];
 
   const tinhRutGon = (conSoInput: number) => {
@@ -81,6 +82,26 @@ const ThanSo = () => {
     return str;
   };
 
+  const tinhKyTu = (fullName) => {
+    let name = convertUnicode(fullName);
+    let nameWithNumber = convertNameToNumber(name).split(" ");
+    let tongTen = 0;
+    nameWithNumber.map((itemTen) => {
+      let tenDon = 0;
+      itemTen.split("").map((item) => {
+        tenDon += parseInt(item);
+      });
+      if (tenDon < 10 || tenDon === 11 || tenDon === 22) {
+        tongTen += tenDon;
+      } else {
+        tongTen +=
+          parseInt(tenDon.toString().split("")[0]) +
+          parseInt(tenDon.toString().split("")[1]);
+      }
+    });
+    return tongTen;
+  };
+
   const tinhNangLucTuNhien = () => {
     if (fullName) {
       let name = convertUnicode(fullName);
@@ -88,7 +109,6 @@ const ThanSo = () => {
       let tenDemRutGonArr = "";
       let tenRieng = lodash.last(nameWithNumber);
       let nangLucTiepCan = 0;
-      console.log(tenRieng);
       tenRieng.split("").map((item) => {
         nangLucTiepCan += parseInt(item);
       });
@@ -103,7 +123,6 @@ const ThanSo = () => {
       } else {
         setNangLucTiepCan(`${nangLucTiepCan} - ${tinhRutGon(nangLucTiepCan)}`);
       }
-      console.log(nangLucTiepCan);
       nameWithNumber.map((item, index) => {
         let temDem = nameWithNumber[index];
         tenDemRutGonArr += tinhRutGon(temDem.toString()).toString();
@@ -170,36 +189,57 @@ const ThanSo = () => {
   };
 
   const tinhNguyenAmTheoTen = (arrTen) => {
-    let arrNguyenAm = [];
-    let arrPhuAm = [];
+    let nguyenAm = "";
+    let phuAm = "";
     arrTen.split("").map((item, index) => {
-      if (item === "y") {
+      if (item === " ") {
+        phuAm += item;
+        nguyenAm += item;
+      } else if (item === "y") {
         if (
-          kiemTraYPhuAm(arrTen[index - 1] ? arrTen[index - 1] : "c") &&
-          kiemTraYPhuAm(arrTen[index + 1] ? arrTen[index + 1] : "c")
+          !kiemTraYPhuAm(arrTen[index - 1] ? arrTen[index - 1] : "c") ||
+          !kiemTraYPhuAm(arrTen[index + 1] ? arrTen[index + 1] : "c")
         ) {
           // y la phu am
-          arrPhuAm.push(item);
+          phuAm += item;
         } else {
           // y la nguyen am
-          arrNguyenAm.push(item);
+          nguyenAm += item;
         }
       } else if (kiemTraYPhuAm(item)) {
         // day la phu am
-        arrPhuAm.push(item);
+        phuAm += item;
       } else {
         // day la nguyen am
-        arrNguyenAm.push(item);
+        nguyenAm += item;
       }
     });
-    console.log("arrPhuAm", arrPhuAm);
-    console.log("arrNguyenAm", arrNguyenAm);
+    return { phuAm, nguyenAm };
+  };
+
+  const tinhChiSoTheoTen = (fullName) => {
+    if (fullName) {
+      let arrFullName = fullName.split(" ");
+      let tenRieng = lodash.last(arrFullName);
+      let valueTenTieng = tinhNguyenAmTheoTen(tenRieng);
+      let valueFullName = tinhNguyenAmTheoTen(fullName);
+      let dongLucThoaMan = tinhKyTu(valueFullName.nguyenAm);
+      let thaiDoBenNgoai = tinhKyTu(valueFullName.phuAm);
+      let nangLucTuNhien = tinhKyTu(fullName);
+      let nangLucTiepCan = tinhKyTu(tenRieng);
+      let dongLucTiepCan = tinhKyTu(valueTenTieng.nguyenAm);
+      console.log("dongLucThoaMan", dongLucThoaMan);
+      console.log("thaiDoBenNgoai", thaiDoBenNgoai);
+      console.log("nangLucTuNhien", nangLucTuNhien);
+      console.log("nangLucTiepCan", nangLucTiepCan);
+      console.log("dongLucTiepCan", dongLucTiepCan);
+    }
   };
 
   const onClickTinhToan = () => {
     tinhNangLucTuNhien();
     tinhBaiHocDuongDoi();
-    tinhNguyenAmTheoTen("yen");
+    tinhChiSoTheoTen(fullName);
   };
 
   const handleOnchangeBirthDay = (value) => {
