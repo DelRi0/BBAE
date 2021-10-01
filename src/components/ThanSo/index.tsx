@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, DatePicker } from "antd";
 import lodash from "lodash";
+import moment from "moment";
 
 const ThanSo = () => {
+  const dateFormat = "DD/MM/YYYY";
   const [baihoc, setBaihoc] = useState(null);
   const [nangluc, setNangluc] = useState(null);
   const [noNghiepBaihocDuongDoi, setNoNghiepBaihocDuongDoi] = useState(null);
   const [nangLucTuNhien, setNangLucTuNhien] = useState(null);
   const [fullName, setFullName] = useState("");
-  const [birthDay, setBirthDay] = useState("");
+  const [birthDay, setBirthDay] = useState(
+    moment(new Date()).format(dateFormat)
+  );
   const [nangLucTiepCan, setNangLucTiepCan] = useState(null);
   const [dongLucThoaMan, setDongLucThoaMan] = useState(null);
+  const [thaiDoBenNgoai, setThaiDoBenNgoai] = useState(null);
+  const [dongLucTiepCan, setDongLucTiepCan] = useState(null);
   const arrNghiep = [13, 14, 16, 19];
 
   const tinhRutGon = (conSoInput: number) => {
@@ -93,13 +99,15 @@ const ThanSo = () => {
       });
       if (tenDon < 10 || tenDon === 11 || tenDon === 22) {
         tongTen += tenDon;
-      } else {
+      } else if (nameWithNumber.length > 1) {
         tongTen +=
           parseInt(tenDon.toString().split("")[0]) +
           parseInt(tenDon.toString().split("")[1]);
+      } else {
+        tongTen = tenDon;
       }
     });
-    return tongTen;
+    return convertValue(tongTen);
   };
 
   const tinhNangLucTuNhien = () => {
@@ -191,6 +199,7 @@ const ThanSo = () => {
   const tinhNguyenAmTheoTen = (arrTen) => {
     let nguyenAm = "";
     let phuAm = "";
+    arrTen = convertUnicode(arrTen);
     arrTen.split("").map((item, index) => {
       if (item === " ") {
         phuAm += item;
@@ -223,27 +232,45 @@ const ThanSo = () => {
       let tenRieng = lodash.last(arrFullName);
       let valueTenTieng = tinhNguyenAmTheoTen(tenRieng);
       let valueFullName = tinhNguyenAmTheoTen(fullName);
+
       let dongLucThoaMan = tinhKyTu(valueFullName.nguyenAm);
       let thaiDoBenNgoai = tinhKyTu(valueFullName.phuAm);
       let nangLucTuNhien = tinhKyTu(fullName);
       let nangLucTiepCan = tinhKyTu(tenRieng);
       let dongLucTiepCan = tinhKyTu(valueTenTieng.nguyenAm);
-      console.log("dongLucThoaMan", dongLucThoaMan);
-      console.log("thaiDoBenNgoai", thaiDoBenNgoai);
-      console.log("nangLucTuNhien", nangLucTuNhien);
-      console.log("nangLucTiepCan", nangLucTiepCan);
-      console.log("dongLucTiepCan", dongLucTiepCan);
+      setNangLucTuNhien(nangLucTuNhien);
+      setNangLucTiepCan(nangLucTiepCan);
+      setThaiDoBenNgoai(thaiDoBenNgoai);
+      setDongLucTiepCan(dongLucTiepCan);
+      setDongLucThoaMan(dongLucThoaMan);
+    }
+  };
+
+  const convertValue = (value: number) => {
+    if (value === 19) {
+      return "19 - 1";
+    } else if (value === 10) {
+      return "1";
+    } else if (value < 10 || value === 11 || value === 22) {
+      return value.toString();
+    } else {
+      let dataSplit = value.toString().split("");
+      let totalData = parseInt(dataSplit[0]) + parseInt(dataSplit[1]);
+      let dataResult =
+        value.toString() + " - " + (totalData === 10 ? "1" : totalData);
+      return dataResult;
     }
   };
 
   const onClickTinhToan = () => {
-    tinhNangLucTuNhien();
+    // tinhNangLucTuNhien();
     tinhBaiHocDuongDoi();
     tinhChiSoTheoTen(fullName);
   };
 
   const handleOnchangeBirthDay = (value) => {
-    setBirthDay(value);
+    let valueFormat = moment(value).format(dateFormat);
+    setBirthDay(valueFormat);
   };
 
   const handleOnchangeFullName = (value) => {
@@ -252,13 +279,14 @@ const ThanSo = () => {
 
   return (
     <div>
-      <div style={{ width: 250, marginLeft: 50 }}>
+      <div style={{ width: 250, margin: "auto" }}>
         <h1>xxxxxxxx</h1>
         <div style={{ marginTop: 15 }}>
-          <Input
-            placeholder="Nhập ngày sinh: Ngày/tháng/năm"
-            onChange={(e) => handleOnchangeBirthDay(e.target.value)}
-          ></Input>
+          <DatePicker
+            defaultValue={moment(new Date(), dateFormat)}
+            onChange={(e) => handleOnchangeBirthDay(e)}
+            style={{ width: 250 }}
+          />
         </div>
         <div style={{ marginTop: 15 }}>
           <Input
@@ -272,13 +300,27 @@ const ThanSo = () => {
         <div style={{ marginTop: 15 }}>
           <span>{`Bài học đường đời: ${
             noNghiepBaihocDuongDoi ? `${noNghiepBaihocDuongDoi} - ` : ""
-          } ${baihoc}`}</span>{" "}
+          } ${baihoc ? baihoc : ""}`}</span>{" "}
           <br></br>
           <span>{`Năng lực tự nhiên: ${
-            nangLucTuNhien ? `${nangLucTuNhien} - ` : ""
-          } ${nangluc}`}</span>
+            nangLucTuNhien ? nangLucTuNhien : ""
+          }`}</span>
           <br></br>
-          <span>{`Năng lực tiếp cận: ${nangLucTiepCan}`}</span>
+          <span>{`Năng lực tiếp cận: ${
+            nangLucTiepCan ? nangLucTiepCan : ""
+          }`}</span>
+          <br></br>
+          <span>{`Thái độ bên ngoài: ${
+            thaiDoBenNgoai ? thaiDoBenNgoai : ""
+          }`}</span>
+          <br></br>
+          <span>{`Động lực tiếp cận: ${
+            dongLucTiepCan ? dongLucTiepCan : ""
+          }`}</span>
+          <br></br>
+          <span>{`Động lực thoả mãn: ${
+            dongLucThoaMan ? dongLucThoaMan : ""
+          }`}</span>
         </div>
       </div>
     </div>
