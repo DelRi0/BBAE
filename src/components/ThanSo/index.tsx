@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button, Input, DatePicker } from "antd";
 import lodash from "lodash";
 import moment from "moment";
-import { number } from "prop-types";
+import styles from "./thanso.module.scss";
+import MaskedInput from "antd-mask-input";
 
 const ThanSo = () => {
   const dateFormat = "DD/MM/YYYY";
@@ -11,9 +12,7 @@ const ThanSo = () => {
   const [noNghiepBaihocDuongDoi, setNoNghiepBaihocDuongDoi] = useState(null);
   const [nangLucTuNhien, setNangLucTuNhien] = useState(null);
   const [fullName, setFullName] = useState("");
-  const [birthDay, setBirthDay] = useState(
-    moment(new Date()).format(dateFormat)
-  );
+  const [birthDay, setBirthDay] = useState(moment(new Date(), dateFormat));
   const [nangLucTiepCan, setNangLucTiepCan] = useState(null);
   const [dongLucThoaMan, setDongLucThoaMan] = useState(null);
   const [thaiDoBenNgoai, setThaiDoBenNgoai] = useState(null);
@@ -28,6 +27,7 @@ const ThanSo = () => {
   const [thanhPhanNoiTroi, setThanhPhanNoiTroi] = useState([]);
   const [baGiaiDoan, setBaGiaiDoan] = useState({});
   const [bonGiaiDoan, setBonGiaiDoan] = useState({});
+  const [chiSoNgaySinh, setChiSoNgaySinh] = useState(null);
 
   const tinhRutGon = (conSoInput: number): number => {
     let conSoRutGon = 0;
@@ -107,6 +107,7 @@ const ThanSo = () => {
       itemTen.split("").map((item) => {
         tenDon += parseInt(item);
       });
+      tenDon = tinhRutGon(tenDon);
       if (tenDon < 10 || tenDon === 11 || tenDon === 22) {
         tongTen += tenDon;
       } else if (nameWithNumber.length > 1) {
@@ -118,46 +119,6 @@ const ThanSo = () => {
       }
     });
     return convertValue(tongTen);
-  };
-
-  const tinhNangLucTuNhien = () => {
-    if (fullName) {
-      let name = convertUnicode(fullName);
-      let nameWithNumber = convertNameToNumber(name).split(" ");
-      let tenDemRutGonArr = "";
-      let tenRieng = lodash.last(nameWithNumber);
-      let nangLucTiepCan = 0;
-      tenRieng.split("").map((item) => {
-        nangLucTiepCan += parseInt(item);
-      });
-      if (nangLucTiepCan === 10) {
-        setNangLucTiepCan("1");
-      } else if (
-        nangLucTiepCan === 11 ||
-        nangLucTiepCan === 22 ||
-        nangLucTiepCan < 10
-      ) {
-        setNangLucTiepCan(nangLucTiepCan);
-      } else {
-        setNangLucTiepCan(`${nangLucTiepCan} - ${tinhRutGon(nangLucTiepCan)}`);
-      }
-      nameWithNumber.map((item, index) => {
-        let temDem = nameWithNumber[index];
-        tenDemRutGonArr += tinhRutGon(temDem.toString()).toString();
-      });
-      let conSoRutGon = 0;
-      tenDemRutGonArr.split("").map((item) => {
-        conSoRutGon += parseInt(item);
-      });
-
-      if (lodash.includes(arrNghiep, conSoRutGon)) {
-        setNangLucTuNhien(conSoRutGon);
-        setNangluc(tinhRutGon(conSoRutGon));
-      } else {
-        setNangLucTuNhien("");
-        setNangluc(tinhRutGon(conSoRutGon).toString());
-      }
-    }
   };
 
   const tinhChiSoNgaySinh = (birthDay) => {
@@ -174,19 +135,19 @@ const ThanSo = () => {
       setNamThanSoTiepTheo(namThanSo.namThanSoTiepTheo);
       setBaGiaiDoan(baGiaiDoan);
       setBonGiaiDoan(bonGiaiDoan);
+      setChiSoNgaySinh(thongTinNgaySinh.ngaySinhRutGon);
     }
   };
 
   const tinhThongTinNgaySinh = () => {
-    let birthDate = birthDay;
+    let birthDate = moment(birthDay, dateFormat);
     if (birthDate) {
-      let arrBirthDate = birthDate.split("/");
       let ngaySinhRutGon = 0,
         thangSinhRutGon = 0,
         namSinhRutGon = 0;
-      ngaySinhRutGon = tinhRutGon(parseInt(arrBirthDate[0]));
-      thangSinhRutGon = tinhRutGon(parseInt(arrBirthDate[1]));
-      namSinhRutGon = tinhRutGon(parseInt(arrBirthDate[2]));
+      ngaySinhRutGon = tinhRutGon(birthDate.date());
+      thangSinhRutGon = tinhRutGon(birthDate.month() + 1);
+      namSinhRutGon = tinhRutGon(birthDate.year());
       let tongNgaySinh = ngaySinhRutGon + thangSinhRutGon + namSinhRutGon;
       let baiHoc = 0;
       let noNghiepDuongDoi = "";
@@ -233,10 +194,11 @@ const ThanSo = () => {
     // giai doan 2 bang ngay sinh rut gon + nam sinh rut gon
     // giai doan 3 bang giai doan 1 + giai doan 2
     // giai doan 4 bang thang sinh rut gon + nam sinh rut gon
-    let arrBirthDay = birthDay.split("/");
-    let ngaySinhRutGon = tinhRutGon(parseInt(arrBirthDay[0]));
-    let thangSinhRutGon = tinhRutGon(parseInt(arrBirthDay[1]));
-    let namSinhRutGon = tinhRutGon(parseInt(arrBirthDay[2]));
+    // let arrBirthDay = birthDay.split("/");
+    let birthDate = moment(birthDay, dateFormat);
+    let ngaySinhRutGon = tinhRutGon(birthDate.date());
+    let thangSinhRutGon = tinhRutGon(birthDate.month() + 1);
+    let namSinhRutGon = tinhRutGon(birthDate.year());
     let giaiDoan1 = tinhRutGon(ngaySinhRutGon + thangSinhRutGon);
     let giaiDoan2 = tinhRutGon(ngaySinhRutGon + namSinhRutGon);
     let giaiDoan3 = tinhRutGon(giaiDoan1 + giaiDoan2);
@@ -251,12 +213,13 @@ const ThanSo = () => {
   };
 
   const tinh3GiaiDoan = (baiHocDuongDoi) => {
-    let birthDate = birthDay;
+    // let birthDate = birthDay;
+    let birthDate = moment(birthDay, dateFormat);
     if (birthDate) {
-      let arrBirthDay = birthDay.split("/");
-      let giaiDoan1 = tinhRutGon(parseInt(arrBirthDay[1]));
-      let giaiDoan2 = tinhRutGon(parseInt(arrBirthDay[0]));
-      let giaiDoan3 = tinhRutGon(parseInt(arrBirthDay[2]));
+      // let arrBirthDay = birthDay.split("/");
+      let giaiDoan1 = tinhRutGon(birthDate.month() + 1);
+      let giaiDoan2 = tinhRutGon(birthDate.date());
+      let giaiDoan3 = tinhRutGon(birthDate.year());
       let baiHocNhanCach3GiaiGoan = { giaiDoan1, giaiDoan2, giaiDoan3 };
       let moc3GiaiDoan = tinhMoc3GiaiDoanBaiHocNhanCach(baiHocDuongDoi);
       return { moc3GiaiDoan, baiHocNhanCach3GiaiGoan };
@@ -417,7 +380,7 @@ const ThanSo = () => {
   };
 
   const handleOnchangeBirthDay = (value) => {
-    let valueFormat = moment(value).format(dateFormat);
+    let valueFormat = moment(value, dateFormat);
     setBirthDay(valueFormat);
   };
 
@@ -426,150 +389,230 @@ const ThanSo = () => {
   };
 
   return (
-    <div>
-      <div style={{ width: 250, margin: "auto" }}>
-        <h1>xxxxxxxx</h1>
+    <div style={{ display: "flex", backgroundColor: "rgb(0 0 0 / 5%)" }}>
+      <div style={{ width: 300, margin: "auto" }}>
         <div style={{ marginTop: 15 }}>
-          <DatePicker
-            defaultValue={moment(new Date(), dateFormat)}
-            onChange={(e) => handleOnchangeBirthDay(e)}
-            style={{ width: 250 }}
-            format={dateFormat}
-          />
-        </div>
-        <div style={{ marginTop: 15 }}>
-          <Input
-            placeholder="Nhập họ và tên"
-            onChange={(e) => handleOnchangeFullName(e.target.value)}
-          ></Input>
-        </div>
-        <Button
-          type="primary"
-          style={{ marginTop: 15 }}
-          onClick={() => onClickTinhToan()}
-        >
-          Tính Toán
-        </Button>
-        <div style={{ marginTop: 15 }}>
-          <span>{`Bài học đường đời: ${
+          <div className={styles.chiSo}>{`Bài học đường đời: ${
             noNghiepBaihocDuongDoi ? `${noNghiepBaihocDuongDoi} - ` : ""
-          } ${baihoc ? baihoc : ""}`}</span>{" "}
-          <br></br>
-          <span>{`Năng lực tự nhiên: ${
+          } ${baihoc ? baihoc : ""}`}</div>
+          <div className={styles.chiSo}>{`Năng lực tự nhiên: ${
             nangLucTuNhien ? nangLucTuNhien : ""
-          }`}</span>
-          <br></br>
-          <span>{`Năng lực tiếp cận: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Phản ứng ban đầu: ${
             nangLucTiepCan ? nangLucTiepCan : ""
-          }`}</span>
-          <br></br>
-          <span>{`Thái độ bên ngoài: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Thái độ thể hiện: ${
             thaiDoBenNgoai ? thaiDoBenNgoai : ""
-          }`}</span>
-          <br></br>
-          <span>{`Động lực tiếp cận: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Động lực ban đầu: ${
             dongLucTiepCan ? dongLucTiepCan : ""
-          }`}</span>
-          <br></br>
-          <span>{`Động lực thoả mãn: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Động lực bên trong: ${
             dongLucThoaMan ? dongLucThoaMan : ""
-          }`}</span>
-          <br></br>
-          <span>{`Chỉ số cân bằng: ${chiSoCanBang ? chiSoCanBang : ""}`}</span>
-          <br></br>
-          <span>{`Chỉ số phát triển: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Cân bằng nội tâm: ${
+            chiSoCanBang ? chiSoCanBang : ""
+          }`}</div>
+          <div className={styles.chiSo}>{`Chỉ số dẫn đường: ${
             chiSoPhatTrien ? chiSoPhatTrien : ""
-          }`}</span>
-          <br></br>
-          <span>{`Năm thần số ${moment().year()}: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Năng lượng ngày sinh: ${
+            chiSoNgaySinh ? chiSoNgaySinh : ""
+          }`}</div>
+          <div className={styles.chiSo}>{`Năm thần số ${moment().year()}: ${
             namThanSoHienTai ? namThanSoHienTai : ""
-          }`}</span>
-          <br></br>
-          <span>{`Năm thần số ${moment().year() + 1}: ${
+          }`}</div>
+          <div className={styles.chiSo}>{`Năm thần số ${moment().year() + 1}: ${
             namThanSoTiepTheo ? namThanSoTiepTheo : ""
-          }`}</span>
+          }`}</div>
+          {thanhPhanNoiTroi.length ? (
+            <div className={styles.chiSo}>
+              <span>{`Chỉ số năng lượng nổi trội: ${thanhPhanNoiTroi.toString()}`}</span>
+            </div>
+          ) : null}
+          {noBaiHoc.length ? (
+            <div>
+              <div className={styles.chiSo}>
+                <span>{`Chỉ số thiếu: ${noBaiHoc.toString()}`}</span>
+              </div>
+            </div>
+          ) : null}
           <br></br>
-          {thanhPhanNoiTroi.length
-            ? thanhPhanNoiTroi.map((item) => {
-                return (
-                  <div key={item}>
-                    <span key={item}>{`Thành phần nổi trội: ${item}`}</span>
-                  </div>
-                );
-              })
-            : null}
-          {/* <br></br> */}
-          {noBaiHoc.length
-            ? noBaiHoc.map((item) => {
-                return (
-                  <div key={item}>
-                    {" "}
-                    <span key={item}>{`Nợ bài học: ${item}`}</span>
-                  </div>
-                );
-              })
-            : null}
+          {baGiaiDoan.moc3GiaiDoan ? (
+            <div>
+              <div
+                className={styles.chiSo}
+              >{`Giai đoạn đức tính từ 0 - ${lodash.get(
+                baGiaiDoan,
+                "moc3GiaiDoan.giaiDoan1"
+              )} tuổi: ${lodash.get(
+                baGiaiDoan,
+                "baiHocNhanCach3GiaiGoan.giaiDoan1"
+              )}`}</div>
+              <div className={styles.chiSo}>{`Giai đoạn đức tính từ ${
+                lodash.get(baGiaiDoan, "moc3GiaiDoan.giaiDoan1") + 1
+              } - ${lodash.get(
+                baGiaiDoan,
+                "moc3GiaiDoan.giaiDoan2"
+              )} tuổi: ${lodash.get(
+                baGiaiDoan,
+                "baiHocNhanCach3GiaiGoan.giaiDoan2",
+                ""
+              )}`}</div>
+              <div className={styles.chiSo}>{`Giai đoạn đức tính từ ${
+                lodash.get(baGiaiDoan, "moc3GiaiDoan.giaiDoan2") + 1
+              } - hết tuổi: ${lodash.get(
+                baGiaiDoan,
+                "baiHocNhanCach3GiaiGoan.giaiDoan3",
+                ""
+              )}`}</div>
+            </div>
+          ) : null}
           <br></br>
-          <span>{`Bài học nhân cách từ 0 - ${lodash.get(
-            baGiaiDoan,
-            "moc3GiaiDoan.giaiDoan1"
-          )} tuổi: ${lodash.get(
-            baGiaiDoan,
-            "baiHocNhanCach3GiaiGoan.giaiDoan1"
-          )}`}</span>
-          <br></br>
-          <span>{`Bài học nhân cách từ ${
-            lodash.get(baGiaiDoan, "moc3GiaiDoan.giaiDoan1") + 1
-          } - ${lodash.get(
-            baGiaiDoan,
-            "moc3GiaiDoan.giaiDoan2"
-          )} tuổi: ${lodash.get(
-            baGiaiDoan,
-            "baiHocNhanCach3GiaiGoan.giaiDoan2"
-          )}`}</span>
-          <br></br>
-          <span>{`Bài học nhân cách từ ${
-            lodash.get(baGiaiDoan, "moc3GiaiDoan.giaiDoan2") + 1
-          } - hết tuổi: ${lodash.get(
-            baGiaiDoan,
-            "baiHocNhanCach3GiaiGoan.giaiDoan3"
-          )}`}</span>
-          <br></br>
-          <br></br>
-          <span>{`Bài học kỹ năng từ 1 - ${lodash.get(
-            bonGiaiDoan,
-            "mocThoiGian.giaiDoan1"
-          )} tuổi: ${lodash.get(
-            bonGiaiDoan,
-            "baiHoc4GiaiDoan.giaiDoan1"
-          )}`}</span>
-          <br></br>
-          <span>{`Bài học kỹ năng từ ${
-            lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan1") + 1
-          } - ${lodash.get(
-            bonGiaiDoan,
-            "mocThoiGian.giaiDoan2"
-          )} tuổi: ${lodash.get(
-            bonGiaiDoan,
-            "baiHoc4GiaiDoan.giaiDoan2"
-          )}`}</span>
-          <br></br>
-          <span>{`Bài học kỹ năng từ ${
-            lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan2") + 1
-          } - ${lodash.get(
-            bonGiaiDoan,
-            "mocThoiGian.giaiDoan3"
-          )} tuổi: ${lodash.get(
-            bonGiaiDoan,
-            "baiHoc4GiaiDoan.giaiDoan3"
-          )}`}</span>
-          <br></br>
-          <span>{`Bài học kỹ năng từ ${
-            lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan3") + 1
-          } - hết tuổi: ${lodash.get(
-            bonGiaiDoan,
-            "baiHoc4GiaiDoan.giaiDoan4"
-          )}`}</span>
+          {bonGiaiDoan.mocThoiGian ? (
+            <div>
+              <div
+                className={styles.chiSo}
+              >{`Giai đoạn kỹ năng từ 1 - ${lodash.get(
+                bonGiaiDoan,
+                "mocThoiGian.giaiDoan1",
+                ""
+              )} tuổi: ${lodash.get(
+                bonGiaiDoan,
+                "baiHoc4GiaiDoan.giaiDoan1",
+                ""
+              )}`}</div>
+              <div className={styles.chiSo}>{`Giai đoạn kỹ năng từ ${
+                lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan1", "") + 1
+              } - ${lodash.get(
+                bonGiaiDoan,
+                "mocThoiGian.giaiDoan2"
+              )} tuổi: ${lodash.get(
+                bonGiaiDoan,
+                "baiHoc4GiaiDoan.giaiDoan2",
+                ""
+              )}`}</div>
+              <div className={styles.chiSo}>{`Giai đoạn kỹ năng từ ${
+                lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan2") + 1
+              } - ${lodash.get(
+                bonGiaiDoan,
+                "mocThoiGian.giaiDoan3"
+              )} tuổi: ${lodash.get(
+                bonGiaiDoan,
+                "baiHoc4GiaiDoan.giaiDoan3",
+                ""
+              )}`}</div>
+              <div className={styles.chiSo}>{`Giai đoạn kỹ năng từ ${
+                lodash.get(bonGiaiDoan, "mocThoiGian.giaiDoan3") + 1
+              } - hết tuổi: ${lodash.get(
+                bonGiaiDoan,
+                "baiHoc4GiaiDoan.giaiDoan4",
+                ""
+              )}`}</div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <div>
+        <div>
+          <h1>Thần số</h1>
+          <div style={{ marginTop: 15 }}>
+            <MaskedInput
+              mask="11/11/1111"
+              name="expiry"
+              placeholder={"Ngày/Tháng/Năm"}
+              onChange={(e) => handleOnchangeBirthDay(e.target.value)}
+              style={{ width: 250 }}
+            />
+          </div>
+          <div style={{ marginTop: 15 }}>
+            <Input
+              placeholder="Nhập họ và tên"
+              onChange={(e) => handleOnchangeFullName(e.target.value)}
+              style={{ width: 250 }}
+            ></Input>
+          </div>
+          <Button
+            type="primary"
+            style={{ marginTop: 15 }}
+            onClick={() => onClickTinhToan()}
+          >
+            Tính Toán
+          </Button>
+        </div>
+        <div
+          style={{
+            width: 900,
+            marginTop: 30,
+            display: "flex",
+            justifyContent: "flex-start",
+            // alignItems: "center",
+          }}
+        >
+          <div
+            className={styles.circles1}
+            style={{
+              backgroundColor: "#297648",
+            }}
+          >
+            <div> TĐTH: {thaiDoBenNgoai || ""}</div>
+            <div
+              className={styles.circles2}
+              style={{
+                backgroundColor: "gray",
+              }}
+            >
+              <div>Tố chất: {nangLucTuNhien}</div>
+              <div
+                className={styles.circles3}
+                style={{
+                  backgroundColor: "yellow",
+                }}
+              >
+                <div>ĐLBT: {dongLucThoaMan}</div>
+              </div>
+            </div>
+          </div>
+          <div
+            className={styles.circles1}
+            style={{
+              backgroundColor: "none",
+            }}
+          >
+            <div>{` `}</div>
+            <div
+              className={styles.circles2}
+              style={{
+                backgroundColor: "#297648",
+              }}
+            >
+              <div>PƯBĐ: {nangLucTiepCan}</div>
+              <div
+                className={styles.circles3}
+                style={{
+                  backgroundColor: "yellow",
+                }}
+              >
+                <div>ĐLBĐ: {dongLucTiepCan}</div>
+              </div>
+            </div>
+          </div>
+          <div
+            className={styles.circles1}
+            style={{
+              backgroundColor: "#ff9900",
+              width: 250,
+              height: 250,
+            }}
+          >
+            <div>
+              {`BHĐĐ: `}
+              {noNghiepBaihocDuongDoi
+                ? `${noNghiepBaihocDuongDoi} - `
+                : ""}{" "}
+              {baihoc}
+            </div>
+          </div>
         </div>
       </div>
     </div>
