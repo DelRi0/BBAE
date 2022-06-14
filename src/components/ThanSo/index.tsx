@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, DatePicker } from "antd";
+import { Button, Input, DatePicker, Form } from "antd";
 import lodash from "lodash";
 import moment from "moment";
 import styles from "./thanso.module.scss";
@@ -8,7 +8,6 @@ import MaskedInput from "antd-mask-input";
 const ThanSo = () => {
   const dateFormat = "DD/MM/YYYY";
   const [baihoc, setBaihoc] = useState(null);
-  const [nangluc, setNangluc] = useState(null);
   const [noNghiepBaihocDuongDoi, setNoNghiepBaihocDuongDoi] = useState(null);
   const [nangLucTuNhien, setNangLucTuNhien] = useState(null);
   const [fullName, setFullName] = useState("");
@@ -157,7 +156,6 @@ const ThanSo = () => {
         baiHoc = 1;
       } else {
         let conSoRutGon2 = 0;
-        // let nonghiepDuongDoi = "";
         tongNgaySinh
           .toString()
           .split("")
@@ -332,30 +330,28 @@ const ThanSo = () => {
   };
 
   const tinhChiSoTheoTen = (fullName) => {
-    if (fullName) {
-      let arrFullName = fullName.split(" ");
-      let tenRieng = lodash.last(arrFullName);
-      let valueTenTieng = tinhNguyenAmTheoTen(tenRieng);
-      let valueFullName = tinhNguyenAmTheoTen(fullName);
+    let arrFullName = fullName.split(" ");
+    let tenRieng = lodash.last(arrFullName);
+    let valueTenTieng = tinhNguyenAmTheoTen(tenRieng);
+    let valueFullName = tinhNguyenAmTheoTen(fullName);
 
-      let dongLucThoaMan = tinhKyTu(valueFullName.nguyenAm);
-      let thaiDoBenNgoai = tinhKyTu(valueFullName.phuAm);
-      let nangLucTuNhien = tinhKyTu(fullName);
-      let nangLucTiepCan = tinhKyTu(tenRieng);
-      let dongLucTiepCan = tinhKyTu(valueTenTieng.nguyenAm);
-      let chiSoCanBang = tinhChiSoCanBang(fullName);
-      let noBaiHoc = tinhNoBaiHoc(fullName);
-      let thanhPhanNoiTroi = tinhThanhPhanNoiTroi(fullName);
-      setNangLucTuNhien(nangLucTuNhien);
-      setNangLucTiepCan(nangLucTiepCan);
-      setThaiDoBenNgoai(thaiDoBenNgoai);
-      setDongLucTiepCan(dongLucTiepCan);
-      setDongLucThoaMan(dongLucThoaMan);
-      setNoBaiHoc(noBaiHoc);
-      setChiSoCanBang(chiSoCanBang);
-      setChiSoPhatTrien(nangLucTiepCan);
-      setThanhPhanNoiTroi(thanhPhanNoiTroi);
-    }
+    let dongLucThoaMan = tinhKyTu(valueFullName.nguyenAm);
+    let thaiDoBenNgoai = tinhKyTu(valueFullName.phuAm);
+    let nangLucTuNhien = tinhKyTu(fullName);
+    let nangLucTiepCan = tinhKyTu(tenRieng);
+    let dongLucTiepCan = tinhKyTu(valueTenTieng.nguyenAm);
+    let chiSoCanBang = tinhChiSoCanBang(fullName);
+    let noBaiHoc = tinhNoBaiHoc(fullName);
+    let thanhPhanNoiTroi = tinhThanhPhanNoiTroi(fullName);
+    setNangLucTuNhien(nangLucTuNhien);
+    setNangLucTiepCan(nangLucTiepCan);
+    setThaiDoBenNgoai(thaiDoBenNgoai);
+    setDongLucTiepCan(dongLucTiepCan);
+    setDongLucThoaMan(dongLucThoaMan);
+    setNoBaiHoc(noBaiHoc);
+    setChiSoCanBang(chiSoCanBang);
+    setChiSoPhatTrien(nangLucTiepCan);
+    setThanhPhanNoiTroi(thanhPhanNoiTroi);
   };
 
   const convertValue = (value: number) => {
@@ -374,9 +370,9 @@ const ThanSo = () => {
     }
   };
 
-  const onClickTinhToan = () => {
-    tinhChiSoTheoTen(fullName);
-    tinhChiSoNgaySinh(birthDay);
+  const onClickTinhToan = (values: any) => {
+    tinhChiSoTheoTen(values.username);
+    tinhChiSoNgaySinh(values.birthDay);
   };
 
   const handleOnchangeBirthDay = (value) => {
@@ -389,8 +385,15 @@ const ThanSo = () => {
   };
 
   return (
-    <div style={{ display: "flex", backgroundColor: "rgb(0 0 0 / 5%)" }}>
-      <div style={{ width: 300, margin: "auto" }}>
+    <div
+      style={{
+        display: "flex",
+        backgroundColor: "rgb(0 0 0 / 5%)",
+        alignItems: "flex-start",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{ marginRight: 100 }}>
         <div style={{ marginTop: 15 }}>
           <div className={styles.chiSo}>{`Bài học đường đời: ${
             noNghiepBaihocDuongDoi ? `${noNghiepBaihocDuongDoi} - ` : ""
@@ -515,30 +518,54 @@ const ThanSo = () => {
       </div>
       <div>
         <div>
-          <h1>Thần số</h1>
-          <div style={{ marginTop: 15 }}>
-            <MaskedInput
-              mask="11/11/1111"
-              name="expiry"
-              placeholder={"Ngày/Tháng/Năm"}
-              onChange={(e) => handleOnchangeBirthDay(e.target.value)}
-              style={{ width: 250 }}
-            />
-          </div>
-          <div style={{ marginTop: 15 }}>
-            <Input
-              placeholder="Nhập họ và tên"
-              onChange={(e) => handleOnchangeFullName(e.target.value)}
-              style={{ width: 250 }}
-            ></Input>
-          </div>
-          <Button
-            type="primary"
-            style={{ marginTop: 15 }}
-            onClick={() => onClickTinhToan()}
+          <h1>Tính các con số</h1>
+          <Form
+            name="basic"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            initialValues={{ remember: true }}
+            onFinish={onClickTinhToan}
+            // onFinishFailed={onFinishFailed}
+            autoComplete="off"
+            style={{ float: "left" }}
           >
-            Tính Toán
-          </Button>
+            <Form.Item
+              label="Ngày/Tháng/Năm"
+              name="birthDay"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn phải nhập vào ngày tháng năm sinh",
+                },
+              ]}
+            >
+              <MaskedInput
+                mask="11/11/1111"
+                name="expiry"
+                placeholder={"Ngày/Tháng/Năm"}
+                onChange={(e) => handleOnchangeBirthDay(e.target.value)}
+                style={{ width: 250 }}
+              />
+            </Form.Item>
+            <Form.Item
+              label="Họ và tên"
+              name="username"
+              rules={[
+                { required: true, message: "Bạn phải nhập vào họ và tên" },
+              ]}
+            >
+              <Input
+                placeholder="Nhập họ và tên"
+                onChange={(e) => handleOnchangeFullName(e.target.value)}
+                style={{ width: 250 }}
+              ></Input>
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                Tính Toán
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
         <div
           style={{
@@ -546,7 +573,7 @@ const ThanSo = () => {
             marginTop: 30,
             display: "flex",
             justifyContent: "flex-start",
-            // alignItems: "center",
+            alignItems: "center",
           }}
         >
           <div
