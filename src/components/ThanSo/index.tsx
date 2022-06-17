@@ -4,6 +4,10 @@ import lodash from "lodash";
 import moment from "moment";
 import styles from "./thanso.module.scss";
 import MaskedInput from "antd-mask-input";
+import SignatureCanvas from "react-signature-canvas";
+import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+
+let sigPad: any = {};
 
 const ThanSo = () => {
   const dateFormat = "DD/MM/YYYY";
@@ -16,7 +20,6 @@ const ThanSo = () => {
   const [dongLucThoaMan, setDongLucThoaMan] = useState(null);
   const [thaiDoBenNgoai, setThaiDoBenNgoai] = useState(null);
   const [dongLucTiepCan, setDongLucTiepCan] = useState(null);
-  const arrNghiep = [13, 14, 16, 19];
   const [namThanSoHienTai, setNamThanSoHienTai] = useState(null);
   const [namThanSoTiepTheo, setNamThanSoTiepTheo] = useState(null);
   const arrConSo = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -383,12 +386,15 @@ const ThanSo = () => {
   const handleOnchangeFullName = (value) => {
     setFullName(value);
   };
+  const clear = () => {
+    sigPad.clear();
+  };
 
   return (
     <div
       style={{
         display: "flex",
-        backgroundColor: "rgb(0 0 0 / 5%)",
+        // backgroundColor: "rgb(0 0 0 / 5%)",
         alignItems: "flex-start",
         justifyContent: "center",
       }}
@@ -640,6 +646,22 @@ const ThanSo = () => {
               {baihoc}
             </div>
           </div>
+        </div>
+        <div style={{ backgroundColor: "#f8efef", marginTop: 10 }}>
+          <SignatureCanvas
+            ref={(ref) => {
+              sigPad = ref;
+            }}
+            penColor="green"
+            canvasProps={{
+              width: 900,
+              height: 500,
+              className: "sigCanvas",
+            }}
+          />
+          <Button onClick={() => clear()} type="primary">
+            XÓA
+          </Button>
         </div>
       </div>
     </div>
